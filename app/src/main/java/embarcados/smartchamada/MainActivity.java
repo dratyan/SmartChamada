@@ -8,8 +8,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.app.AlertDialog;
+import android.util.Log;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.zxing.Result;
+import me.dm7.barcodescanner.zxing.ZXingScannerView;
+
+public class MainActivity extends AppCompatActivity implements  ZXingScannerView.ResultHandler{
+
+    private ZXingScannerView ViewScanner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,14 +25,44 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.button);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                QrScanner(view);
             }
         });
+    }
+
+    public void QrScanner(View view){
+        ViewScanner = new ZXingScannerView(this);
+        setContentView(ViewScanner);
+        ViewScanner.setResultHandler(this);
+        ViewScanner.startCamera();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        ViewScanner.stopCamera();
+    }
+
+    @Override
+    public void handleResult(Result rawResult){
+        // Do something with the result here
+
+        Log.e("handler", rawResult.getText()); // Prints scan results
+        Log.e("handler", rawResult.getBarcodeFormat().toString()); // Prints the scan format (qrcode)
+
+        // show the scanner result into dialog box.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Scan Result");
+        builder.setMessage(rawResult.getText());
+        AlertDialog alert1 = builder.create();
+        alert1.show();
+
+        // If you would like to resume scanning, call this method below:
+        // mScannerView.resumeCameraPreview(this);
     }
 
     @Override
