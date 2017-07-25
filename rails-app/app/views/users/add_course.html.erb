@@ -1,0 +1,11 @@
+<%= form_for(@course, {action: '/courses/create.json'}) do |f| %>
+  <%= label :course, :name %>
+  <%= text_field :course, :name, required: true %>
+
+  <%= label :course, :location %>
+  <%= text_field :course, :location, required: true %>
+  <br>
+  <%= hidden_field :course, :user_id %>
+
+  <%= f.submit %>
+<% end %>

@@ -1,0 +1,80 @@
+<p id="notice"><%= notice %></p>
+
+<p><%= "#{@user.nome} | #{@user.cartao}" %></p>
+
+<h2>Cursos</h2>
+<a href="<%= add_course_user_path(@user) %>">Adicionar</a>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Local</th>
+      <th colspan=3></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @courses.each do |course| %>
+      <tr>
+    <td><%= course.name %></td>
+    <td><%= course.location %></td>
+    <td><%= link_to 'Remover', remove_course_user_path(@user, courseid: course.id), method: :post, data: { confirm: 'Tem certeza?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<hr>
+
+<%= link_to 'Alterar', edit_user_path(@user) %> |
+<%= link_to 'Voltar', users_path %>
+
+<%- unless @lat_lng %>
+  <script>
+var apiGeolocationSuccess = function(position) {
+  alert("API geolocation success!\n\nlat = " + position.coords.latitude + "\nlng = " + position.coords.longitude);
+};
+
+var tryAPIGeolocation = function() {
+  jQuery.post( "https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDCa1LUe1vOczX1hO_iGYgyo8p_jYuGOPU", function(success) {
+    apiGeolocationSuccess({coords: {latitude: success.location.lat, longitude: success.location.lng}});
+  })
+  .fail(function(err) {
+    alert("API Geolocation error! \n\n"+err);
+  });
+};
+
+var browserGeolocationSuccess = function(position) {
+  //alert("Browser geolocation success!\n\nlat = " + position.coords.latitude + "\nlng = " + position.coords.longitude)
+  document.cookie = "lat=" + position.coords.latitude;
+  document.cookie = "lon=" + position.coords.longitude;
+};
+
+var browserGeolocationFail = function(error) {
+  switch (error.code) {
+    case error.TIMEOUT:
+      alert("Browser geolocation error !\n\nTimeout.");
+      break;
+    case error.PERMISSION_DENIED:
+      if(error.message.indexOf("Only secure origins are allowed") == 0) {
+    tryAPIGeolocation();
+      }
+      break;
+    case error.POSITION_UNAVAILABLE:
+      alert("Browser geolocation error !\n\nPosition unavailable.");
+      break;
+  }
+};
+
+var tryGeolocation = function() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+    browserGeolocationSuccess,
+    browserGeolocationFail,
+    {maximumAge: 50000, timeout: 20000, enableHighAccuracy: true});
+  }
+};
+
+tryGeolocation();
+  </script>
+<%- end %>
