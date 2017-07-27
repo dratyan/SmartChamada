@@ -1,3 +1,13 @@
 <p><%= "Data: #{@roll_call.call_date}" %></p>
 
 <%= raw @svg %>
+
+<br><br>
+<p>Presentes:</p>
+<ul>
+  <% if @attendances %>
+    <% @attendances.each do |attendance| %>
+      <li><%= attendance.cartao %> (<%= attendance.created_at %>)</li>
+    <% end %>
+  <% end %>
+</ul>

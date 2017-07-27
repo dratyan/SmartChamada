@@ -17,6 +17,8 @@ class RollCallsController < ApplicationController
     @svg = @qrcode.as_svg(offset: 0, color: '000', 
                              shape_rendering: 'crispEdges', 
                              module_size: 11)
+    @attendances = Attendance.where(roll_call_id: @roll_call.id)
+    puts @attendances.inspect
   end
 
   # GET /roll_call/new

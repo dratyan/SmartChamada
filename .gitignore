@@ -1,11 +1,10 @@
+./.idea/*
 .byebug_history
 */tmp
 */log
 *.iml
 .gradle
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
 .DS_Store
 /build
 /captures
