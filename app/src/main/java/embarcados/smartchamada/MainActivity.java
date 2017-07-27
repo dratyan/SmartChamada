@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationListener;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -23,12 +24,25 @@ import android.view.MenuItem;
 import android.app.AlertDialog;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.Result;
 
 import java.util.Calendar;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
 
@@ -37,6 +51,11 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
     private LocationManager locManager;
     private LocationListener locListener;
 
+    public String secret;
+    public String cartao = new String("229119");
+    public Location locat;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,13 +63,15 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        final String url = "http://progdisc.club:3000/register";
         tView = (TextView) findViewById(R.id.tView);
 
         locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                //tView.append("\n " +location.getLatitude()+ " " + location.getLongitude());
+                //tView.append("\n " +location.getLatitude()+ " " + location.getLongitude())
+                locat = location;
                 location.getLatitude();
                 location.getLongitude();
 
@@ -92,6 +113,36 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
             public void onClick(View view) {
                 locManager.requestLocationUpdates("gps", 5000, 5, locListener);
                 QrScanner(view);
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                try {
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+                            }
+                        }) {
+                    @Override
+                    protected Map<String, String> getParams() {
+                        Map<String, String> params = new HashMap<String, String>();
+                        params .put("course_id", "Embarcados");
+                        params .put("secret", secret);
+                        params .put("cartao", cartao);
+                        params .put("lat", String.format("%f", locat.getLatitude()));
+                        params .put("lon", String.format("%f", locat.getLongitude()));
+                        return params;
+                    }
+                };
+                RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+                requestQueue.add(stringRequest);
             }
         });
 
@@ -129,6 +180,8 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         Log.e("handler", rawResult.getText()); // Prints scan results
         Log.e("handler", rawResult.getBarcodeFormat().toString()); // Prints the scan format (qrcode)
 
+        secret = rawResult.getText();
+
         // show the scanner result into dialog box.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Scan Result");
@@ -137,7 +190,10 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
         alert1.show();
 
         // If you would like to resume scanning, call this method below:
-        // mScannerView.resumeCameraPreview(this);
+         //ViewScanner.resumeCameraPreview(this);
+        if(!rawResult.getText().isEmpty())
+            onPause();
+            setContentView(R.layout.activity_main);
     }
 
     @Override
@@ -161,4 +217,6 @@ public class MainActivity extends AppCompatActivity implements ZXingScannerView.
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }
