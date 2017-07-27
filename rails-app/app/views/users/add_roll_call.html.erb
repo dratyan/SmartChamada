@@ -1,0 +1,11 @@
+<%= form_for(@roll_call, {action: '/roll_call'}) do |f| %>
+  <%= label :roll_call, :call_date %>
+  <%= date_field :roll_call, :call_date, value: Date.today, required: true %>
+
+  <%= label :roll_call, :secret %>
+  <%= text_field :roll_call, :secret, required: true %>
+  <br>
+  <%= hidden_field :roll_call, :course_id %>
+
+  <%= f.submit %>
+<% end %>

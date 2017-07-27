@@ -10,6 +10,12 @@ class CoursesController < ApplicationController
   # GET /course/1
   # GET /course/1.json
   def show
+    @roll_calls = RollCall.find_by(course_id: @course.id)
+    @attendances = Hash.new
+
+    @roll_calls.each do |roll_call|
+      @attendances[roll_call.id] = Attendance.find_by(roll_call_id: roll_call.id)
+    end
   end
 
   # GET /course/new

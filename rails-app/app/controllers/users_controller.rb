@@ -53,6 +53,12 @@ class UsersController < ApplicationController
     redirect_to @user, notice: 'Curso excluído!'
   end
 
+  def add_roll_call
+    @roll_call = RollCall.new
+    @roll_call.course_id = params['courseid']
+    @roll_call.secret = SecureRandom.uuid
+  end
+
   def new_attendance
     # TODO
   end

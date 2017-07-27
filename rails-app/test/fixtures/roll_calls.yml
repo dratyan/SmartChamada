@@ -1,0 +1,7 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  call_date: 2017-07-25
+
+two:
+  call_date: 2017-07-25
