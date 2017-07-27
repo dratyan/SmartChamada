@@ -13,7 +13,7 @@ class RollCallsController < ApplicationController
   # GET /roll_call/1.json
   def show
     # TODO: qual rota/endpoint?
-    @qrcode = RQRCode::QRCode.new("#{@roll_call.secret}")
+    @qrcode = RQRCode::QRCode.new("#{@roll_call.course_id};#{@roll_call.secret}")
     @svg = @qrcode.as_svg(offset: 0, color: '000', 
                              shape_rendering: 'crispEdges', 
                              module_size: 11)
